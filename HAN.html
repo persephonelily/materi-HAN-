@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ringkasan Interaktif Hukum Administrasi Negara (HAN)</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .active-tab {
+            border-bottom: 3px solid #0284c7;
+            color: #0284c7;
+            font-weight: 700;
+        }
+        .dark .active-tab {
+            border-bottom: 3px solid #38bdf8;
+            color: #38bdf8;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen transition-colors duration-200">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-white/90 dark:bg-slate-800/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo & Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="p-2 bg-brand-600 text-white rounded-lg shadow-md">
+                        <i class="fa-solid fa-scale-balanced text-xl"></i>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-lg sm:text-xl leading-tight">Mastery HAN</h1>
+                        <p class="text-xs text-slate-500 dark:text-slate-400">Ringkasan & Panduan Ujian HAN</p>
+                    </div>
+                </div>
+
+                <!-- Right Actions -->
+                <div class="flex items-center space-x-2 sm:space-x-4">
+                    <!-- Flashcard Quick Mode Button -->
+                    <button onclick="toggleUtsMode()" id="utsBtn" class="flex items-center space-x-2 bg-amber-500 hover:bg-amber-600 text-white px-3 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition shadow hover:shadow-md">
+                        <i class="fa-solid fa-bolt"></i>
+                        <span class="hidden sm:inline">Mode Ringkas</span> UTS
+                    </button>
+
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2 text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200 rounded-lg bg-slate-100 dark:bg-slate-700 transition">
+                        <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <!-- Search Bar & Quick Filters -->
+        <div class="mb-6 bg-white dark:bg-slate-800 p-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700">
+            <div class="relative">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchInput" onkeyup="searchContent()" placeholder="Cari istilah (contoh: Beschikking, Legalitas, Hisbah, Donner...)" class="w-full pl-10 pr-4 py-2.5 bg-slate-50 dark:bg-slate-900 border border-slate-300 dark:border-slate-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500">
+            </div>
+            <!-- Quick Tags -->
+            <div class="flex flex-wrap gap-2 mt-3 text-xs">
+                <span class="text-slate-500 dark:text-slate-400 py-1">Pencarian Cepat:</span>
+                <button onclick="quickFilter('Tokoh')" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-brand-50 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300">👨‍⚖️ Tokoh & Ahli</button>
+                <button onclick="quickFilter('AUPB')" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-brand-50 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300">⚖️ AUPB</button>
+                <button onclick="quickFilter('Fikih Siyasah')" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-brand-50 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300">🕌 Fikih Siyasah</button>
+                <button onclick="quickFilter('Kasus')" class="px-2.5 py-1 bg-slate-100 dark:bg-slate-700 hover:bg-brand-50 dark:hover:bg-slate-600 rounded-full text-slate-600 dark:text-slate-300">📝 Analisis Kasus</button>
+                <button onclick="resetSearch()" class="px-2.5 py-1 text-red-500 hover:underline">Reset</button>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="border-b border-slate-200 dark:border-slate-700 mb-6 overflow-x-auto">
+            <nav class="flex space-x-6 min-w-max" id="tabContainer">
+                <button onclick="switchTab('modul1')" id="tab-modul1" class="tab-btn active-tab py-3 px-1 text-sm font-medium transition">
+                    <i class="fa-solid fa-book-bookmark mr-2"></i>1. Ruang Lingkup & Konsep Dasar
+                </button>
+                <button onclick="switchTab('modul2')" id="tab-modul2" class="tab-btn py-3 px-1 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
+                    <i class="fa-solid fa-mosque mr-2"></i>2. Perspective Fikih Siyasah
+                </button>
+                <button onclick="switchTab('modul3')" id="tab-modul3" class="tab-btn py-3 px-1 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
+                    <i class="fa-solid fa-gavel mr-2"></i>3. Sumber Hukum & Asas HAN
+                </button>
+                <button onclick="switchTab('modul4')" id="tab-modul4" class="tab-btn py-3 px-1 text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition">
+                    <i class="fa-solid fa-file-pen mr-2"></i>4. Simulasi Soal Kasus UTS
+                </button>
+            </nav>
+        </div>
+
+        <!-- MODUL CONTENT AREA -->
+        <div id="contentArea">
+
+            <!-- MODUL 1: Ruang Lingkup & Konsep Dasar -->
+            <section id="modul1" class="tab-content space-y-6">
+                <!-- Banner -->
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 text-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-2">Bab 1: Ruang Lingkup dan Konsep Dasar HAN</h2>
+                    <p class="text-blue-100 text-sm">Memahami asal-usul istilah, pemikiran ahli, instrumen pemerintahan, dan perbedaan HTN vs HAN.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Item 1: Istilah & Asal-Usul -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center space-x-2 text-brand-600 dark:text-brand-400 font-bold mb-3">
+                            <i class="fa-solid fa-globe text-lg"></i>
+                            <h3>1. Istilah dan Asal-usul HAN</h3>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-600 dark:text-slate-300">
+                            <li><strong class="text-slate-800 dark:text-slate-100">Asal Istilah:</strong> Berasal dari bahasa Belanda <em>Bestuursrecht</em> atau <em>Administratief Recht</em> (warisan sistem hukum kolonial).</li>
+                            <li class="pt-2 border-t border-slate-100 dark:border-slate-700">
+                                <span class="font-semibold text-slate-800 dark:text-slate-100">Perbedaan Tradisi Hukum:</span>
+                                <ul class="list-disc pl-5 mt-1 space-y-1">
+                                    <li><strong class="text-amber-600 dark:text-amber-400">Administrative Law (Common Law):</strong> Berfokus pada kontrol peradilan terhadap pemerintah (<em>judicial review</em>).</li>
+                                    <li><strong class="text-emerald-600 dark:text-emerald-400">Bestuursrecht (Civil Law / Indonesia):</strong> Berfokus pada aturan tindakan dan instrumen pemerintahan.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Item 2: Inti Definisi Tokoh -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2 text-brand-600 dark:text-brand-400 font-bold">
+                                <i class="fa-solid fa-users text-lg"></i>
+                                <h3>2. Inti Definisi Menurut Tokoh</h3>
+                            </div>
+                            <span class="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 px-2 py-0.5 rounded font-medium">Tips UTS: Kata Kunci</span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-semibold text-slate-800 dark:text-slate-100">👨‍⚖️ Logemann</p>
+                                <p class="text-slate-600 dark:text-slate-300 text-xs mt-1">Norma yang mengikat alat administrasi negara agar menjalankan tugasnya dengan baik.</p>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-semibold text-slate-800 dark:text-slate-100">👨‍⚖️ A.M. Donner</p>
+                                <p class="text-slate-600 dark:text-slate-300 text-xs mt-1">Aturan yang mengatur cara organ pemerintahan menjalankan tugas dan hubungan hukumnya dengan warga negara.</p>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-semibold text-slate-800 dark:text-slate-100">👨‍⚖️ Prajudi Atmosudirdjo</p>
+                                <p class="text-slate-600 dark:text-slate-300 text-xs mt-1">Hukum tata pemerintahan, organisasi negara, administrasi pembangunan, dan lingkungan.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 3: Fokus Kajian Utama (Sering Keluar) -->
+                    <div class="searchable md:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-xl border-2 border-brand-500/30 dark:border-brand-500/20 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center space-x-2 text-brand-600 dark:text-brand-400 font-bold">
+                                <i class="fa-solid fa-star text-amber-500"></i>
+                                <h3>3. Fokus Kajian Utama HAN (Sangat Sering Keluar!)</h3>
+                            </div>
+                            <span class="text-xs bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 px-2 py-0.5 rounded font-bold">Wajib Hafal</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm mt-3">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">⚡ Kekuasaan Publik</h4>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Bagaimana pejabat menggunakan wewenang dari UU untuk mengambil keputusan.</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">📜 Instrumen Pemerintahan</h4>
+                                <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-1">
+                                    <li>• <strong>Regeling:</strong> Peraturan < UU</li>
+                                    <li>• <strong>Beschikking:</strong> KTUN / Keputusan</li>
+                                    <li>• <strong>Beleidsregel:</strong> Peraturan Kebijakan</li>
+                                    <li>• <strong>Keperdataan:</strong> Kontrak pengadaan</li>
+                                </ul>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">🛡️ Perlindungan Warga</h4>
+                                <p class="text-xs text-slate-600 dark:text-slate-300 mb-1">Mencegah tindakan:</p>
+                                <ul class="text-xs text-red-600 dark:text-red-400 space-y-0.5">
+                                    <li>• <em>Detournement de pouvoir</em> (Penyalahgunaan wewenang)</li>
+                                    <li>• <em>Willekeur</em> (Sewenang-wenang)</li>
+                                    <li>• <em>Onbevoegdheid</em> (Melampaui wewenang)</li>
+                                </ul>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded-lg border border-slate-200 dark:border-slate-700">
+                                <h4 class="font-bold text-slate-800 dark:text-slate-100 mb-1">⚖️ AUPB</h4>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Standar etika dan hukum pejabat (kepastian hukum, kecermatan, keadilan).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Item 4: Kedudukan & Analogi HTN vs HAN -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center space-x-2 text-brand-600 dark:text-brand-400 font-bold mb-3">
+                            <i class="fa-solid fa-sitemap text-lg"></i>
+                            <h3>4. Kedudukan & Hubungan HTN vs HAN</h3>
+                        </div>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mb-2">Kedudukan: Termasuk dalam **Hukum Publik**.</p>
+                        <!-- Analogi Gedung -->
+                        <div class="p-3 bg-blue-50 dark:bg-slate-900/80 rounded-lg border border-blue-200 dark:border-slate-700 text-sm">
+                            <p class="font-bold text-blue-900 dark:text-blue-300 text-xs uppercase tracking-wide mb-2">🏰 Analogi Desain Gedung</p>
+                            <div class="space-y-2 text-xs">
+                                <p><strong class="text-slate-800 dark:text-slate-200">HTN (Statis):</strong> Menentukan material dasar, fondasi, tiang, dinding, dan atap gedung (<em>Negara dalam keadaan diam</em>).</p>
+                                <p><strong class="text-slate-800 dark:text-slate-200">HAN (Dinamis):</strong> Mengatur teknis pengolahan material, operasional pembangunan, & cara memfungsikan ruangan gedung secara efektif (<em>Negara dalam keadaan bergerak</em>).</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 text-xs text-slate-600 dark:text-slate-300 space-y-1">
+                            <p>• <strong>Pidana:</strong> Sanksi jika ada pelanggaran operasional merugikan publik.</p>
+                            <p>• <strong>Perdata:</strong> Muncul saat pemerintah melakukan kontrak/perikatan (misal: beli lampu gedung).</p>
+                        </div>
+                    </div>
+
+                    <!-- Item 5: Contoh Nyata -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center space-x-2 text-brand-600 dark:text-brand-400 font-bold mb-3">
+                            <i class="fa-solid fa-list-check text-lg"></i>
+                            <h3>5. Contoh Nyata HAN di Masyarakat</h3>
+                        </div>
+                        <div class="space-y-2 text-sm">
+                            <div class="flex items-start space-x-2 p-2 bg-slate-50 dark:bg-slate-900/50 rounded">
+                                <span class="text-brand-600">🆔</span>
+                                <div>
+                                    <p class="font-medium text-xs">Mengurus KTP / SIM</p>
+                                    <span class="inline-block px-2 py-0.5 bg-blue-100 text-blue-800 text-[10px] font-bold rounded mt-1">Beschikking (Keputusan)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-2 p-2 bg-slate-50 dark:bg-slate-900/50 rounded">
+                                <span class="text-brand-600">📜</span>
+                                <div>
+                                    <p class="font-medium text-xs">Peraturan Bupati tentang Retribusi</p>
+                                    <span class="inline-block px-2 py-0.5 bg-green-100 text-green-800 text-[10px] font-bold rounded mt-1">Regeling (Peraturan)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-2 p-2 bg-slate-50 dark:bg-slate-900/50 rounded">
+                                <span class="text-brand-600">🛡️</span>
+                                <div>
+                                    <p class="font-medium text-xs">Operasi Penertiban Satpol PP</p>
+                                    <span class="inline-block px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] font-bold rounded mt-1">Perbuatan Materiil (Feitelijk Handelingen)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODUL 2: Perspektif Fikih Siyasah -->
+            <section id="modul2" class="tab-content hidden space-y-6">
+                <div class="bg-gradient-to-r from-emerald-600 to-teal-700 text-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-2">Bab 2: HAN dalam Perspektif Fikih Siyasah</h2>
+                    <p class="text-emerald-100 text-sm">Prinsip tata kelola pemerintahan Islam, tokoh klasik, serta perbandingannya dengan HAN Modern.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Terminology wajib hafalkan -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-emerald-600 dark:text-emerald-400">1. Istilah Kunci Fikih Siyasah</h3>
+                            <span class="text-xs bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 px-2 py-0.5 rounded font-bold">Wajib Hafal</span>
+                        </div>
+                        <div class="space-y-3 text-sm">
+                            <div class="border-l-4 border-emerald-500 pl-3 py-1">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">Siyāsah Idāriyyah</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Politik atau sistem administrasi pemerintahan Islam.</p>
+                            </div>
+                            <div class="border-l-4 border-emerald-500 pl-3 py-1">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">Al-Sulṭah al-Tanfīdhiyyah</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Otoritas atau lembaga eksekutif pemegang kekuasaan negara.</p>
+                            </div>
+                            <div class="border-l-4 border-emerald-500 pl-3 py-1">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">Wilāyah al-Ḥisbah</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Lembaga kontrol/pengawasan pasar, moral publik, ketertiban, dan mutu pelayanan.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pandangan Tokoh Klasik -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-emerald-600 dark:text-emerald-400">2. Tokoh Klasik Administrasi Islam</h3>
+                            <span class="text-xs bg-amber-100 text-amber-800 dark:bg-amber-900/50 dark:text-amber-300 px-2 py-0.5 rounded font-medium">Tips UTS</span>
+                        </div>
+                        <div class="space-y-2.5 text-xs">
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">🕋 Al-Māwardī (Al-Aḥkām al-Sulṭāniyyah)</p>
+                                <p class="text-slate-600 dark:text-slate-300 mt-1">Administrasi negara = tata kelola urusan rakyat via institusi sah untuk menegakkan keadilan.</p>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">🕋 Ibn Taimiyyah (Al-Siyāsah al-Shar‘iyyah)</p>
+                                <p class="text-slate-600 dark:text-slate-300 mt-1">Kekuasaan = kewajiban terbesar setelah iman. Alat vital menegakkan keadilan & cegah kedzaliman.</p>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">🕋 Najm al-Dīn al-Ṭūfī</p>
+                                <p class="text-slate-600 dark:text-slate-300 mt-1">Teori <em>maṣlaḥah mursalah</em>: Kebijakan sah mutlak sejauh mendatangkan kemaslahatan publik.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Asas Siyasah Idariyyah vs HAN Modern -->
+                    <div class="searchable md:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-emerald-600 dark:text-emerald-400 mb-3">3. Titik Temu: Asas Siyasah Idāriyyah vs HAN Modern</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                            <div class="p-3 bg-emerald-50/50 dark:bg-slate-900/60 rounded-lg border border-emerald-100 dark:border-slate-700">
+                                <p class="font-bold text-emerald-800 dark:text-emerald-300 mb-1">Asas Legalitas</p>
+                                <p class="text-slate-500 mb-1">↔️ <em>Al-hukmu lillāh</em></p>
+                                <p class="text-slate-600 dark:text-slate-300">Setiap kebijakan bertumpu pada hukum Allah & regulasi sah (QS. An-Nisā: 59).</p>
+                            </div>
+                            <div class="p-3 bg-emerald-50/50 dark:bg-slate-900/60 rounded-lg border border-emerald-100 dark:border-slate-700">
+                                <p class="font-bold text-emerald-800 dark:text-emerald-300 mb-1">Asas Amanah</p>
+                                <p class="text-slate-500 mb-1">↔️ Pejabat = Pemegang Titipan</p>
+                                <p class="text-slate-600 dark:text-slate-300">Pejabat bertugas melayani masyarakat, bukan pemilik kekuasaan mutlak.</p>
+                            </div>
+                            <div class="p-3 bg-emerald-50/50 dark:bg-slate-900/60 rounded-lg border border-emerald-100 dark:border-slate-700">
+                                <p class="font-bold text-emerald-800 dark:text-emerald-300 mb-1">Asas Kemanfaatan</p>
+                                <p class="text-slate-500 mb-1">↔️ <em>Jalb al-maṣāliḥ</em></p>
+                                <p class="text-slate-600 dark:text-slate-300">Mengarahkan kebijakan untuk meraih manfaat & menangkal mudarat (<em>dar' al-mafāsid</em>).</p>
+                            </div>
+                            <div class="p-3 bg-emerald-50/50 dark:bg-slate-900/60 rounded-lg border border-emerald-100 dark:border-slate-700">
+                                <p class="font-bold text-emerald-800 dark:text-emerald-300 mb-1">Asas Akuntabilitas</p>
+                                <p class="text-slate-500 mb-1">↔️ Tanggung Jawab Ganda</p>
+                                <p class="text-slate-600 dark:text-slate-300">Bertanggung jawab di dunia (rakyat/sistem) dan akhirat (kepada Allah).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Objek & Instrumen Khas -->
+                    <div class="searchable md:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-emerald-600 dark:text-emerald-400 mb-3">4. Instrumen Khas HAN Islam</h3>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">🏛️ Hisbah</p>
+                                <p class="text-slate-600 dark:text-slate-300 text-[11px] mt-1">Mirip Lembaga Ombudsman & Penertiban Regulasi.</p>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">🗺️ Iqtā’</p>
+                                <p class="text-slate-600 dark:text-slate-300 text-[11px] mt-1">Kebijakan pemberian hak kelola tanah demi kesejahteraan.</p>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">⚖️ Ta‘zīr</p>
+                                <p class="text-slate-600 dark:text-slate-300 text-[11px] mt-1">Sanksi administratif oleh penguasa untuk jaga ketertiban.</p>
+                            </div>
+                            <div class="p-2.5 bg-slate-50 dark:bg-slate-900/50 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">💰 Bayt al-Māl</p>
+                                <p class="text-slate-600 dark:text-slate-300 text-[11px] mt-1">Pengelolaan pos harta dan keuangan publik secara transparan.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODUL 3: Sumber Hukum & Asas HAN -->
+            <section id="modul3" class="tab-content hidden space-y-6">
+                <div class="bg-gradient-to-r from-purple-600 to-indigo-700 text-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-2">Bab 3: Sumber Hukum HAN dan Kaitannya dengan Asas</h2>
+                    <p class="text-purple-100 text-sm">Sumber formal, material, daya ikat khusus, hingga prinsip Good Governance.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Pandangan Tokoh Sumber Hukum -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-purple-600 dark:text-purple-400 mb-3">1. Pandangan Tokoh tentang Sumber Hukum</h3>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2 bg-slate-50 dark:bg-slate-900/50 rounded">
+                                <strong class="text-slate-800 dark:text-slate-200">Philipus M. Hadjon:</strong> Peraturan perundang-undangan (dasar legalitas) & AUPB sebagai sumber tidak tertulis yang mengikat.
+                            </div>
+                            <div class="p-2 bg-slate-50 dark:bg-slate-900/50 rounded">
+                                <strong class="text-slate-800 dark:text-slate-200">Bagir Manan:</strong> Cakupan sangat luas (UU, doktrin, yurisprudensi, kebiasaan). Bersumber material dari Pancasila & UUD 1945.
+                            </div>
+                            <div class="p-2 bg-slate-50 dark:bg-slate-900/50 rounded">
+                                <strong class="text-slate-800 dark:text-slate-200">Prajudi Atmosudirdjo:</strong> Sifat HAN dinamis, kebiasaan administrasi & kepatutan sangat memengaruhi.
+                            </div>
+                            <div class="p-2 bg-slate-50 dark:bg-slate-900/50 rounded">
+                                <strong class="text-slate-800 dark:text-slate-200">Ridwan HR:</strong> Dibagi jadi Sumber Formal (regulasi normatif) & Sumber Material (Pancasila, konstitusi, good governance).
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Pengelompokan Sumber Hukum -->
+                    <div class="searchable bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <div class="flex items-center justify-between mb-3">
+                            <h3 class="font-bold text-purple-600 dark:text-purple-400">2. Pengelompokan Sumber Hukum</h3>
+                            <span class="text-xs bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300 px-2 py-0.5 rounded font-bold">Soal Ujian</span>
+                        </div>
+                        <div class="space-y-3 text-xs">
+                            <div class="p-2.5 bg-purple-50/50 dark:bg-slate-900/50 rounded border-l-2 border-purple-500">
+                                <p class="font-bold text-slate-800 dark:text-slate-100 mb-1">A. Sumber Formal (Bentuk Nyata Hukum Positif)</p>
+                                <p class="text-slate-600 dark:text-slate-300">• Peraturan Perundang-undangan (UUD 45, UU No. 30/2014 AP, PP, Perpres, Perda)</p>
+                                <p class="text-slate-600 dark:text-slate-300">• Yurisprudensi (Putusan PTUN inkrah)</p>
+                                <p class="text-slate-600 dark:text-slate-300">• Doktrin (Pendapat ahli) & Kebiasaan Administrasi</p>
+                            </div>
+                            <div class="p-2.5 bg-purple-50/50 dark:bg-slate-900/50 rounded border-l-2 border-purple-500">
+                                <p class="font-bold text-slate-800 dark:text-slate-100 mb-1">B. Sumber Material (Substansi Nilai)</p>
+                                <p class="text-slate-600 dark:text-slate-300">Pancasila, UUD 1945, Filsafat Hukum, & Norma Internasional (Good Governance UN-ESCAP/OECD).</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Daya Ikat Khusus & Adagium -->
+                    <div class="searchable md:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-purple-600 dark:text-purple-400 mb-3">3. Karakter & Daya Ikat Sumber Hukum Khusus</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100 mb-1">🧠 Akal Budi (Redelijkheid)</p>
+                                <p class="text-slate-600 dark:text-slate-300">Batu uji hakim untuk mengukur apakah tindakan pejabat sewenang-wenang/tidak.</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100 mb-1">⚖️ Presumptio Justae Causa</p>
+                                <p class="text-slate-600 dark:text-slate-300">Pasal 65 UU 30/2014: Keputusan pemerintah selalu dianggap sah sampai dibuktikan sebaliknya.</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100 mb-1">🗣️ Adagium Fiktif Positif</p>
+                                <p class="text-slate-600 dark:text-slate-300"><em>Qui tacet consentire videtur</em> (siapa yang diam dianggap setuju) → Pasal 53 UU AP.</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/60 rounded border border-slate-200 dark:border-slate-700">
+                                <p class="font-bold text-slate-800 dark:text-slate-100 mb-1">📖 Wahyu Ilahi</p>
+                                <p class="text-slate-600 dark:text-slate-300">Bernilai konstitusional lewat Sila 1. Kebijakan dilarang menabrak nilai agama.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Koneksi Sumber & Good Governance -->
+                    <div class="searchable md:col-span-2 bg-white dark:bg-slate-800 p-5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                        <h3 class="font-bold text-purple-600 dark:text-purple-400 mb-3">4. Koneksi Sumber Hukum dengan Asas & Good Governance</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                            <div class="space-y-2">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">📌 Asas Legalitas & AUPB:</p>
+                                <p class="text-slate-600 dark:text-slate-300">• <strong>Legalitas (Geen bevoegdheid zonder wet):</strong> Menghubungkan HAN dengan peraturan UU sebagai sumber formal utama.</p>
+                                <p class="text-slate-600 dark:text-slate-300">• <strong>AUPB:</strong> Berakar dari yurisprudensi & doktrin, dikodifikasi dalam <strong>UU No. 30 Tahun 2014</strong> (Pasal 5 & 10: 8 poin AUPB).</p>
+                            </div>
+                            <div class="space-y-2 border-t md:border-t-0 md:border-l border-slate-200 dark:border-slate-700 pt-2 md:pt-0 md:pl-4">
+                                <p class="font-bold text-slate-800 dark:text-slate-100">🌐 Good Governance (UU No. 25/2009):</p>
+                                <p class="text-slate-600 dark:text-slate-300">Pilar Utama: Partisipasi, Supremasi Hukum, Transparansi, Responsif, Berkeadilan, Efektif-Efisien, Akuntabilitas, dan Integritas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MODUL 4: Simulasi Soal Kasus UTS -->
+            <section id="modul4" class="tab-content hidden space-y-6">
+                <div class="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6 rounded-2xl shadow-md">
+                    <h2 class="text-2xl font-bold mb-2">Bab 4: Bocoran & Panduan Analisis Kasus UTS</h2>
+                    <p class="text-amber-100 text-sm">Gunakan pisau analisis AUPB untuk membedah kasus praktis di lingkungan kampus.</p>
+                </div>
+
+                <!-- Case Study Interactive Simulator -->
+                <div class="bg-white dark:bg-slate-800 p-6 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+                    <h3 class="font-bold text-lg text-slate-800 dark:text-slate-100 mb-2">🔍 Pisau Analisis AUPB untuk Kasus Kampus (UIN)</h3>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mb-6">Klik tombol kasus di bawah untuk melihat pola analisis AUPB yang tepat untuk lembar jawaban ujian Anda.</p>
+
+                    <!-- Toggle Case Tabs -->
+                    <div class="flex space-x-3 mb-4">
+                        <button onclick="showCase(1)" id="caseBtn1" class="px-4 py-2 text-xs font-bold rounded-lg bg-brand-600 text-white">Kasus 1: Pengelolaan Parkir Kampus</button>
+                        <button onclick="showCase(2)" id="caseBtn2" class="px-4 py-2 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Kasus 2: Layanan Akademik Disabilitas</button>
+                    </div>
+
+                    <!-- Case Content 1 -->
+                    <div id="caseContent1" class="space-y-4 text-sm">
+                        <div class="p-4 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-lg">
+                            <h4 class="font-bold text-amber-900 dark:text-amber-300 text-sm mb-1">📌 Studi Kasus: Pengelolaan Parkir Kampus UIN</h4>
+                            <p class="text-xs text-amber-800 dark:text-amber-400">Kampus menerapkan kebijakan retribusi/sistem baru pengelolaan parkir yang menimbulkan kemacetan dan ketidaknyamanan mahasiswa.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-bold text-slate-800 dark:text-slate-200 text-xs mb-1">1. Asas Pelayanan yang Baik & Keadilan</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Apakah fasilitas parkir tertata ramah publik? Apakah tarif/kebijakan tidak memberatkan civitas akademika?</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-bold text-slate-800 dark:text-slate-200 text-xs mb-1">2. Asas Kecermatan</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Apakah kebijakan pengelolaan parkir sudah memperhitungkan aspek keselamatan, kapasitas lahan, dan kenyamanan secara matang sebelum diterapkan?</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Case Content 2 -->
+                    <div id="caseContent2" class="space-y-4 text-sm hidden">
+                        <div class="p-4 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800/50 rounded-lg">
+                            <h4 class="font-bold text-indigo-900 dark:text-indigo-300 text-sm mb-1">📌 Studi Kasus: Layanan Akademik Disabilitas</h4>
+                            <p class="text-xs text-indigo-800 dark:text-indigo-400">Fasilitas gedung kampus dan sistem modul pembelajaran belum mendukung aksesibilitas mahasiswa penyandang disabilitas.</p>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-bold text-slate-800 dark:text-slate-200 text-xs mb-1">1. Asas Kesetaraan / Inclusiveness</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Apakah sistem akademik memberikan akses setara bagi mahasiswa disabilitas (seperti ramp, bidang miring, modul ramah disabilitas, dll)?</p>
+                            </div>
+                            <div class="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-lg">
+                                <p class="font-bold text-slate-800 dark:text-slate-200 text-xs mb-1">2. Asas Kemanfaatan & Kecermatan</p>
+                                <p class="text-xs text-slate-600 dark:text-slate-300">Penyelenggara wajib mengkaji kebutuhan riil seluruh mahasiswa tanpa terkecuali agar pelayanan publik berdampak nyata.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-200 dark:border-slate-800 mt-12 py-6 text-center text-xs text-slate-500">
+        <p>Aplikasi Smart Ringkasan Materi Hukum Administrasi Negara (HAN) • Siap UTS</p>
+    </footer>
+
+    <!-- JavaScript Interaktif -->
+    <script>
+        // 1. Navigation Tab Switcher
+        function switchTab(tabId) {
+            // Hide all tab content
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.add('hidden');
+            });
+            // Reset tab button active styles
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active-tab');
+                btn.classList.add('text-slate-500', 'dark:text-slate-400');
+            });
+
+            // Show selected content
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            // Highlight selected tab button
+            const activeBtn = document.getElementById('tab-' + tabId);
+            activeBtn.classList.add('active-tab');
+            activeBtn.classList.remove('text-slate-500', 'dark:text-slate-400');
+        }
+
+        // 2. UTS Mode / Quick Summary Highlight Toggle
+        let isUtsMode = false;
+        function toggleUtsMode() {
+            isUtsMode = !isUtsMode;
+            const btn = document.getElementById('utsBtn');
+            const cards = document.querySelectorAll('.searchable');
+
+            if (isUtsMode) {
+                btn.classList.replace('bg-amber-500', 'bg-red-600');
+                btn.classList.replace('hover:bg-amber-600', 'hover:bg-red-700');
+                btn.innerHTML = `<i class="fa-solid fa-xmark"></i> Nonaktifkan Mode UTS`;
+
+                // Highlight cards containing crucial tips
+                cards.forEach(card => {
+                    if (card.innerText.includes('Wajib Hafal') || card.innerText.includes('Tips UTS') || card.innerText.includes('Sangat Sering Keluar')) {
+                        card.classList.add('ring-2', 'ring-amber-500', 'bg-amber-50/20');
+                    } else {
+                        card.style.opacity = '0.5';
+                    }
+                });
+            } else {
+                btn.classList.replace('bg-red-600', 'bg-amber-500');
+                btn.classList.replace('hover:bg-red-700', 'hover:bg-amber-600');
+                btn.innerHTML = `<i class="fa-solid fa-bolt"></i> <span class="hidden sm:inline">Mode Ringkas</span> UTS`;
+
+                cards.forEach(card => {
+                    card.classList.remove('ring-2', 'ring-amber-500', 'bg-amber-50/20');
+                    card.style.opacity = '1';
+                });
+            }
+        }
+
+        // 3. Search Filter Functionality
+        function searchContent() {
+            const input = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.searchable');
+
+            // Switch to show all content across tabs if searching
+            if (input.trim() !== '') {
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('hidden'));
+            }
+
+            cards.forEach(card => {
+                const text = card.innerText.toLowerCase();
+                if (text.includes(input)) {
+                    card.style.display = "block";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
+
+        function quickFilter(keyword) {
+            document.getElementById('searchInput').value = keyword;
+            searchContent();
+        }
+
+        function resetSearch() {
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.searchable').forEach(card => card.style.display = 'block');
+            switchTab('modul1');
+        }
+
+        // 4. Case Study Selector
+        function showCase(caseNum) {
+            const btn1 = document.getElementById('caseBtn1');
+            const btn2 = document.getElementById('caseBtn2');
+            const content1 = document.getElementById('caseContent1');
+            const content2 = document.getElementById('caseContent2');
+
+            if (caseNum === 1) {
+                btn1.className = 'px-4 py-2 text-xs font-bold rounded-lg bg-brand-600 text-white';
+                btn2.className = 'px-4 py-2 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+                content1.classList.remove('hidden');
+                content2.classList.add('hidden');
+            } else {
+                btn2.className = 'px-4 py-2 text-xs font-bold rounded-lg bg-brand-600 text-white';
+                btn1.className = 'px-4 py-2 text-xs font-bold rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300';
+                content2.classList.remove('hidden');
+                content1.classList.add('hidden');
+            }
+        }
+
+        // 5. Dark Mode Toggle
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                icon.classList.replace('fa-sun', 'fa-moon');
+            } else {
+                html.classList.add('dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+            }
+        }
+    </script>
+</body>
+</html>
